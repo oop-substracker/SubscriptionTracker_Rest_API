@@ -1,6 +1,5 @@
 package com.oop.substracker.model;
 
-
 import com.oop.substracker.model.Subscriptions.Billing;
 import org.springframework.data.mongodb.core.mapping.Document;
 

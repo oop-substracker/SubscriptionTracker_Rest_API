@@ -2,6 +2,7 @@ package com.oop.substracker.controller;
 
 import com.oop.substracker.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,25 @@ public class UserController {
     UserRepository repo;
 
     @PostMapping("/api/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        User insertedUser = repo.insert(user);
-        return ResponseEntity.ok(insertedUser);
+    public ResponseEntity<Object> register(@RequestBody User user) {
+        try {
+            User existingUser = repo.findByEmail(user.getEmail());
+
+            if (existingUser != null) {
+                String message = "Email already used";
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+            } else {
+                User insertedUser = repo.insert(user);
+                return ResponseEntity.ok(insertedUser);
+            }
+        } catch (DataAccessException  e) {
+            e.printStackTrace();
+
+            String message = "Email already used";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+        }
     }
+
 
     @PostMapping("api/login")
     public ResponseEntity<Object> login(@RequestBody User user) {

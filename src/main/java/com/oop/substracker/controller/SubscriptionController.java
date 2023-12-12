@@ -67,7 +67,7 @@ public class SubscriptionController {
             Optional<User> existingUser = user.findById(userId);
 
             if (existingUser.isPresent()) {
-                Subscription sub = repo.save(subscription);
+                Subscription sub = repo.insert(subscription);
                 return ResponseEntity.status(HttpStatus.OK).body(sub);
             } else {
                 String message = "User not authenticated";
@@ -80,5 +80,30 @@ public class SubscriptionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
     }
+
+
+    @PatchMapping("/api/subscriptions/update/{id}")
+    public Object updateTimeStamps(@PathVariable String id, @RequestBody Subscription updatedSub) {
+        try {
+            Optional<Subscription> optionalSubscription = repo.findById(id);
+
+            if (optionalSubscription.isPresent()) {
+                Subscription subscription = optionalSubscription.get();
+                subscription.setTimeRemaining(updatedSub.getTimeRemaining());
+                subscription.setRemainingTimeInMillis(updatedSub.getRemainingTimeInMillis());
+                subscription.setWindowCloseTime(updatedSub.getWindowCloseTime());
+
+                repo.save(subscription);
+                return ResponseEntity.ok("Timestamps updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subscription not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = "An error occurred";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        }
+    }
+
 
 }

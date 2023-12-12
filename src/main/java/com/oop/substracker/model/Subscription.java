@@ -4,6 +4,8 @@ import com.oop.substracker.model.Subscriptions.Billing;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
+
 @Document(collection = "Subscription")
 public class Subscription {
     @Id
@@ -11,11 +13,14 @@ public class Subscription {
     private String userId;
     private String email;
     private String platform;
-    private String timeRemaining;
+    private long timeRemaining;
     private Billing billing;
     private String dueDate;
 
-    public Subscription(String userId, String email, String platform, String timeRemaining, Billing billing, String dueDate) {
+    private long remainingTimeInMillis;
+    private Instant windowCloseTime;
+
+    public Subscription(String userId, String email, String platform, long timeRemaining, Billing billing, String dueDate) {
         this.userId = userId;
         this.email = email;
         this.platform = platform;
@@ -26,6 +31,22 @@ public class Subscription {
 
 
     public Subscription() { }
+
+    public long getRemainingTimeInMillis() {
+        return remainingTimeInMillis;
+    }
+
+    public void setRemainingTimeInMillis(long remainingTimeInMillis) {
+        this.remainingTimeInMillis = remainingTimeInMillis;
+    }
+
+    public Instant getWindowCloseTime() {
+        return windowCloseTime;
+    }
+
+    public void setWindowCloseTime(Instant windowCloseTime) {
+        this.windowCloseTime = windowCloseTime;
+    }
 
     public String getId() {
         return id;
@@ -51,11 +72,11 @@ public class Subscription {
         this.platform = platform;
     }
 
-    public String getTimeRemaining() {
+    public long getTimeRemaining() {
         return timeRemaining;
     }
 
-    public void setTimeRemaining(String timeRemaining) {
+    public void setTimeRemaining(long timeRemaining) {
         this.timeRemaining = timeRemaining;
     }
 

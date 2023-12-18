@@ -76,7 +76,7 @@ public class SubscriptionController {
 
         } catch(Exception e) {
             e.printStackTrace();
-            String message = "An error occured";
+            String message = "An error occurred";
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
     }
@@ -105,5 +105,42 @@ public class SubscriptionController {
         }
     }
 
+    @PostMapping("/api/subscriptions/edit/{id}")
+    public Object updateTimeRemaining(@PathVariable String id) {
+        try {
+            Optional<Subscription> sub = repo.findById(id);
 
+            if (sub.isPresent()) {
+                Subscription subscription = sub.get();
+                subscription.setTimeRemaining(Integer.MIN_VALUE);
+                repo.save(subscription);
+                return ResponseEntity.status(HttpStatus.OK).body("Subscription updated");
+            }  else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subscription not found");
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
+
+    @DeleteMapping("/api/subscriptions/delete/{id}")
+    public Object deleteSubscription(@PathVariable String id) {
+        try {
+            Optional<Subscription> sub = repo.findById(id);
+
+            if (sub.isPresent()) {
+                Subscription subscription = sub.get();
+                repo.delete(subscription);
+                return ResponseEntity.status(HttpStatus.OK).body("Subscription deleted");
+            }  else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subscription not found");
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
 }
